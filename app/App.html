@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xml:lang="en">
+	<head>
+		<title>Test Mockup</title>
+	</head>
+
+	<body onload="setConnected(false)">
+		<div>
+			<div>
+				<input type="text" id="nickname" placeholder="Choose a nickname"/>
+				<input type="text" id="token" placeholder="needs a token" disabled="disabled"/>
+			</div>
+			<br />
+			<div>
+				<button id="connect" onclick="connect();">Connect</button>
+				<button id="disconnect" disabled="disabled" onclick="disconnect();">
+					Disconnect
+				</button>
+			</div>
+			<br />
+			<div id="conversationDiv">
+				<input type="text" id="lobbyName" placeholder="new Lobby name"/>
+				<button id="openLobby" onclick="openLobbyOnClick();">Send</button>
+				<p id="response"></p>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+
+		function setConnected(connected) {
+			document.getElementById('connect').disabled = connected;
+			document.getElementById('disconnect').disabled = !connected;
+			document.getElementById('nickname').disabled = connected;
+			document.getElementById('conversationDiv').style.visibility
+			  = connected ? 'visible' : 'hidden';
+			document.getElementById('response').innerHTML = '';
+			if(!connected) {
+				document.getElementById('token').value = null;
+				document.getElementById('nickname').value = null;
+			}
+		}
+
+		function connect() {
+			var nickname = document.getElementById('nickname').value;
+			fetch('http://localhost:8081/nicknames', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({'nickname':nickname}),
+			})
+			.then(res => res.json())
+			.then(j => {
+				if(j["token"] != null) {
+					let myToken = j.token;
+					document.getElementById('token').value = myToken;
+					setConnected(true);
+				} else {
+					alert('Invalid Nickname, choose another one!')
+				}
+				console.log(JSON.stringify(j))
+			});
+		}
+
+		function disconnect() {
+			let token = document.getElementById('token').value;
+			let nickname = document.getElementById('nickname').value;
+			if(token != null) {
+				fetch('http://localhost:8081/nicknames/'+token, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({'nickname':nickname}),
+				})
+				.then(res => res.json())
+				.then(j => {
+					if(j["nickname"] != null) {
+						setConnected(false);
+					}
+					console.log(JSON.stringify(j))
+				});
+			}
+		}
+
+		function openLobbyOnClick() {
+			let ownerName = document.getElementById('nickname').value;
+			let ownerUID = document.getElementById('token').value;
+			let lobbyName = document.getElementById('lobbyName').value;
+			fetch('http://localhost:8082/lobbies', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({'name':lobbyName, 'ownerName':ownerName, 'ownerUID':ownerUID, 'sizeLimit':11}),
+			})
+			.then(res => res.json())
+			.then(j => {
+				if(j["lobbyUID"] != null) {
+					let myToken = j.lobbyUID;
+					document.getElementById('lobbyName').value = myToken;
+				} else {
+					alert('Invalid lobbyName, choose another one!')
+				}
+				console.log(JSON.stringify(j))
+			});
+		}
+
+	</script>
+</html>
