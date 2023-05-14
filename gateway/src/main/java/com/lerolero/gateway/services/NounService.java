@@ -1,0 +1,30 @@
+package com.lerolero.gateway.services;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
+
+@Service
+public class NounService {
+
+	private RestTemplate restTemplate = new RestTemplate();
+
+	private String baseURL = "http://localhost:8083";
+
+	public List<String> randomNounList(Integer size) {
+		String url = baseURL + "/nouns?size=" + size;
+		try {
+			ResponseEntity<String[]> resp = restTemplate.getForEntity(url, String[].class);
+			return Arrays.asList(resp.getBody());
+		} catch (Exception e) {
+			throw new RuntimeException("Couldn't get noun list: " + e.getMessage());
+		}
+	}
+
+}
