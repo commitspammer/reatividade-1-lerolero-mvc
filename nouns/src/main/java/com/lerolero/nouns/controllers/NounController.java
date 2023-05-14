@@ -26,7 +26,7 @@ public class NounController {
 	}
 
 	@GetMapping("/events")
-	public SseEmitter subscribe(@RequestParam(defaultValue = "1") Integer interval) {
+	public SseEmitter subscribe(@RequestParam(defaultValue = "200") Integer interval) {
 		SseEmitter emitter = new SseEmitter(-1L);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(() -> {

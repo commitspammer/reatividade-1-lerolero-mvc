@@ -12,6 +12,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpMethod;
 
+import com.lerolero.gateway.models.dto.LinkDTO;
+
 @Service
 public class NounService {
 
@@ -29,6 +31,14 @@ public class NounService {
 		} catch (Exception e) {
 			throw new RuntimeException("Couldn't get noun list: " + e.getMessage());
 		}
+	}
+
+	public LinkDTO eventsLink(Integer interval) {
+		return new LinkDTO(
+			baseURL + "/nouns/events?interval=" + interval,
+			"GET",
+			"text/event-stream"
+		);
 	}
 
 }
