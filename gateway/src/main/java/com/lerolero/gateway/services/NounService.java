@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,8 @@ public class NounService {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	private final String baseURL = "http://localhost:8083";
+	@Value("${webservice.nouns.baseurl}")
+	private String baseURL;
 
 	public List<String> randomNounList(Integer size) {
 		String url = baseURL + "/nouns?size=" + size;
