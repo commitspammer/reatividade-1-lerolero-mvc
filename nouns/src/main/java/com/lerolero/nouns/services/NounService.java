@@ -5,13 +5,15 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.lerolero.nouns.repositories.NounRepository;
+
 @Service
 public class NounService {
 
-	private int increment = 0;
+	private NounRepository repo = new NounRepository();
 
 	private String next() {
-		return "Hello " + increment++ + "!";
+		return repo.pullRandom();
 	}
 
 	public String randomNoun() {
