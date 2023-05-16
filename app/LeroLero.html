@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>LeroLero MVC</title>
+		<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<button @click="count++">{{ count }}</button>
+			<br>
+			<button @click="stop">{{ chosenNoun }}</button>
+			<br>
+			<button @click="spin" v-if="!spinning">START</button>
+		</div>
+	</body>
+	<style>
+	button {
+		width:200px;
+	}
+	</style>
+	<script>
+	const { createApp, ref } = Vue
+
+	createApp({
+		setup() {
+			const count = ref(0)
+
+			var nouns = []
+			const chosenNoun = ref('...')
+
+			const fetchNouns = size =>
+				fetch('http://localhost:8080/nouns?size=' + size)
+					.then(res => res.json())
+					.then(list => nouns = nouns.concat(list))
+					.catch(e => console.log(e))
+
+			const updateNoun = () => {
+				console.log('Nouns left: ' + nouns.length)
+				const THRESHOLD = 5
+				if (nouns.length <= THRESHOLD) fetchNouns(20)
+				chosenNoun.value = nouns.shift() || '...'
+			}
+
+			const spinning = ref(false)
+			var intervalId = null
+
+			const spin = () => {
+				spinning.value = true
+				intervalId = setInterval(updateNoun, 100)	
+			}
+
+			const stop = () => {
+				spinning.value = false
+				clearInterval(intervalId)	
+			}
+
+			return { count, chosenNoun, spinning, spin, stop }
+		}
+	}).mount('#app')
+	</script>
+
+</html>
