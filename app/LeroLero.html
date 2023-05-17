@@ -6,11 +6,12 @@
 	</head>
 	<body>
 		<div id="app">
-			<button @click="count++">{{ count }}</button>
-			<br>
-			<button @click="stop">{{ chosenNoun }}</button>
-			<br>
-			<button @click="spin" v-if="!spinning">START</button>
+			<div v-for="wheel in wheels">
+				<button @click="stop(wheel)" :disabled="!wheel.intervalId">
+					{{ wheel.wordDisplay }}
+				</button>
+			</div>
+			<button @click="spin(wheels)" v-if="noneSpinning">START</button>
 		</div>
 	</body>
 	<style>
@@ -19,42 +20,63 @@
 	}
 	</style>
 	<script>
-	const { createApp, ref } = Vue
+	const { createApp, ref, computed } = Vue
 
 	createApp({
 		setup() {
 			const count = ref(0)
 
-			var nouns = []
-			const chosenNoun = ref('...')
-
-			const fetchNouns = size =>
-				fetch('http://localhost:8080/nouns?size=' + size)
+			const fetchWords = (wheel, amount) =>
+				fetch('http://localhost:8080/' + wheel.name + '?size=' + amount)
+					.then(res => res.ok ? res : undefined)
 					.then(res => res.json())
-					.then(list => nouns = nouns.concat(list))
-					.catch(e => console.log(e))
+					.then(list => wheel.wordBuffer = wheel.wordBuffer.concat(list))
+					.catch(e => console.log('Error fetching ' + wheel.name))
 
-			const updateNoun = () => {
-				console.log('Nouns left: ' + nouns.length)
+			const updateWord = (wheel) => () => {
 				const THRESHOLD = 5
-				if (nouns.length <= THRESHOLD) fetchNouns(20)
-				chosenNoun.value = nouns.shift() || '...'
+				const FETCH_AMOUNT = 20
+				if (wheel.wordBuffer.length <= THRESHOLD) fetchWords(wheel, FETCH_AMOUNT)
+				wheel.wordDisplay = wheel.wordBuffer.shift() || '...'
+				console.log(wheel.name + ' left: ' + wheel.wordBuffer.length)
 			}
 
-			const spinning = ref(false)
-			var intervalId = null
-
-			const spin = () => {
-				spinning.value = true
-				intervalId = setInterval(updateNoun, 100)	
+			const spin = (wheels) => {
+				const INTERVAL_MS = 200
+				wheels.forEach(w => w.intervalId = setInterval(updateWord(w), INTERVAL_MS))
 			}
 
-			const stop = () => {
-				spinning.value = false
-				clearInterval(intervalId)	
+			const stop = (wheel) => {
+				clearInterval(wheel.intervalId)
+				wheel.intervalId = null
 			}
 
-			return { count, chosenNoun, spinning, spin, stop }
+			const wheels = ref([
+				{
+					name: 'adverbs',
+					wordBuffer: [],
+					wordDisplay: '...',
+					intervalId: null,
+				},
+				{
+					name: 'verbs',
+					wordBuffer: [],
+					wordDisplay: '...',
+					intervalId: null,
+				},
+				{
+					name: 'nouns',
+					wordBuffer: [],
+					wordDisplay: '...',
+					intervalId: null,
+				},
+			])
+
+			const noneSpinning = computed(() => {
+				return wheels.value.filter(w => w.intervalId != null).length === 0
+			})
+
+			return { count, wheels, spin, stop, noneSpinning }
 		}
 	}).mount('#app')
 	</script>
