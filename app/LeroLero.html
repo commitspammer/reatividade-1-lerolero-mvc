@@ -24,8 +24,6 @@
 
 	createApp({
 		setup() {
-			const count = ref(0)
-
 			const fetchWords = (wheel, amount) =>
 				fetch('http://localhost:8080/' + wheel.name + '?size=' + amount)
 					.then(res => res.ok ? res : undefined)
@@ -76,7 +74,7 @@
 				return wheels.value.filter(w => w.intervalId != null).length === 0
 			})
 
-			return { count, wheels, spin, stop, noneSpinning }
+			return { wheels, spin, stop, noneSpinning }
 		}
 	}).mount('#app')
 	</script>
