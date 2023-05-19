@@ -47,3 +47,79 @@ GET /nouns/events?interval={interval}
   type: string
 }
 ```
+
+### Get random verb list
+
+Analogous to ["Get random noun list"](#get-random-noun-list) route.
+
+**Endpoint**:
+
+```ts
+GET /verbs?size={size}
+```
+
+**Returns**:
+200 OK
+
+```ts
+[ string ]
+```
+
+### Subscribe for random verb events
+
+Analogous to ["Subscribe for random noun events"](#subscribe-for-random-noun-events) route.
+
+**Endpoint**:
+
+```ts
+GET /verbs/events?interval={interval}
+```
+
+**Returns**:
+200 OK
+
+```ts
+{
+  href: string,
+  method: string,
+  type: string
+}
+```
+
+### Get random adverb list
+
+Analogous to ["Get random noun list"](#get-random-noun-list) route.
+
+**Endpoint**:
+
+```ts
+GET /adverbs?size={size}
+```
+
+**Returns**:
+200 OK
+
+```ts
+[ string ]
+```
+
+### Subscribe for random adverb events
+
+Analogous to ["Subscribe for random noun events"](#subscribe-for-random-noun-events) route.
+
+**Endpoint**:
+
+```ts
+GET /adverbs/events?interval={interval}
+```
+
+**Returns**:
+200 OK
+
+```ts
+{
+  href: string,
+  method: string,
+  type: string
+}
+```
