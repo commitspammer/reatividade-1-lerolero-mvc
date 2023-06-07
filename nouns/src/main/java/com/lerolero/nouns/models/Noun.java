@@ -3,14 +3,12 @@ package com.lerolero.nouns.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("nouns") // "nouns" is the name of the collection in the database
+@Document("nouns")
 public class Noun {
 
 	@Id
-	private String id;  // every document in mongo has an implicit "_id"
-	private String plural;  // this field holds the plural form of that noun (example: "Lions")
-
-	/* all attributes have getters and setters */
+	private String id;
+	private String plural;
 
 	public String getId() {
 		return id;

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.lerolero.nouns.repositories.MongoNounRepository;
 import com.lerolero.nouns.models.Noun;
 
@@ -13,12 +13,12 @@ import com.lerolero.nouns.models.Noun;
 public class NounService {
 
 	@Autowired
-	private MongoNounRepository repo; // autowiring the new Repository which uses MongoDB
+	private MongoNounRepository repo;
 
 	private String next() {
-		//return repo.pullRandom().getPlural();    // IGNORE THIS, findAll() NEEDS A FIX
-
-		return repo.findAll().get(0).getPlural();  // FIXME this throws IndexOutOfBoundsException!!!
+		return repo.pullRandom()
+			.orElseThrow(() -> new RuntimeException("No noun available"))
+			.getPlural();
 	}
 
 	public String randomNoun() {
