@@ -4,16 +4,21 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lerolero.adverbs.repositories.AdverbRepository;
+import com.lerolero.adverbs.repositories.MongoAdverbRepository;
+import com.lerolero.adverbs.models.Adverb;
 
 @Service
 public class AdverbService {
 
-	private AdverbRepository repo = new AdverbRepository();
+	@Autowired
+	private MongoAdverbRepository repo;
 
 	private String next() {
-		return repo.pullRandom();
+		return repo.pullRandom()
+			.orElseThrow(() -> new RuntimeException("No adverb available"))
+			.getString();
 	}
 
 	public String randomAdverb() {
