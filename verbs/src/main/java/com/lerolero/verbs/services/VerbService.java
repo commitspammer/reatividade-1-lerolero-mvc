@@ -4,16 +4,21 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lerolero.verbs.repositories.VerbRepository;
+import com.lerolero.verbs.repositories.MongoVerbRepository;
+import com.lerolero.verbs.models.Verb;
 
 @Service
 public class VerbService {
 
-	private VerbRepository repo = new VerbRepository();
+	@Autowired
+	private MongoVerbRepository repo;
 
 	private String next() {
-		return repo.pullRandom();
+		return repo.pullRandom()
+			.orElseThrow(() -> new RuntimeException("No verb available"))
+			.getContinuous();
 	}
 
 	public String randomVerb() {
